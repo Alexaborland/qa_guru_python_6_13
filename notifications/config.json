@@ -6,7 +6,7 @@
     "reportLink": "",
     "language": "en",
     "messenger": "telegram",
-    "allureFolder": "allure-results",
+    "allureFolder": "C:/Users/HP/AppData/Local/Temp/831599417158043428/allure-report",
     "enableChart": true
   },
   "telegram": {
