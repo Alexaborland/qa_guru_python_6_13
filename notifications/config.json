@@ -1,13 +1,13 @@
 {
   "base": {
-    "project": "some project",
-    "environment": "some env",
-    "comment": "some comment",
-    "reportLink": "",
+    "logo": "",
+    "project": "${JOB_BASE_NAME}",
+    "environment": "Prod https://demoqa.com",
+    "comment": "alexa_borland test passed",
+    "reportLink": "${BUILD_URL}",
     "language": "en",
-    "messenger": "telegram",
     "allureFolder": "C:/Users/HP/AppData/Local/Temp/831599417158043428/allure-report",
-    "enableChart": true
+     "enableChart": true
   },
   "telegram": {
     "token": "6645750689:AAE-o6xipweZIcSa2iIDaL-AsGJ1nDZXc88",
