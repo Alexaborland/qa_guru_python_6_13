@@ -1,20 +1,12 @@
-from pathlib import Path
-import pytest
 import os
-from selenium import webdriver
+import pytest
+from selenium.webdriver.chrome.options import Options
 from dotenv import load_dotenv
 from selene import browser
-
+from selenium import webdriver
 from utils import attach
 
-
 DEFAULT_BROWSER_VERSION = "100.0"
-
-
-
-def path(file_name):
-    import test
-    return str(Path(test.__file__).parent.joinpath(f'picture/{file_name}').absolute())
 
 
 def pytest_addoption(parser):
@@ -23,20 +15,32 @@ def pytest_addoption(parser):
         default='100.0'
     )
 
+    parser.addoption(
+        '--browser',
+        default="chrome"
+    )
+
 
 @pytest.fixture(scope='session', autouse=True)
 def load_env():
     load_dotenv()
 
 
-@pytest.fixture(scope='function')
-def setup_browser():
+@pytest.fixture(scope='function', autouse=True)
+def browser_open(request):
+    browser.config.window_width = 1920
+    browser.config.window_height = 1080
     browser.config.base_url = 'https://demoqa.com'
+    browser.config.timeout = 10
 
-    options = webdriver.ChromeOptions()
-    options.browser_version = "100.0"
-
+    browser_version = request.config.getoption('--browser_version')
+    browser_version = browser_version \
+        if browser_version != "" \
+        else DEFAULT_BROWSER_VERSION
+    options = Options()
     selenoid_capabilities = {
+        "browserName": "chrome",
+        "browserVersion": browser_version,
         "selenoid:options": {
             "enableVNC": True,
             "enableVideo": True
@@ -44,15 +48,14 @@ def setup_browser():
     }
     options.capabilities.update(selenoid_capabilities)
 
-    browser.config.driver_options = options
     login = os.getenv('LOGIN')
     password = os.getenv('PASSWORD')
 
-    browser.config.driver_remote_url = (
-        f"https://{login}:{password}@selenoid.autotests.cloud/wd/hub"
+    driver = webdriver.Remote(
+        command_executor=f"https://{login}:{password}@selenoid.autotests.cloud/wd/hub",
+        options=options
     )
-    browser.config.window_width = 1920
-    browser.config.window_height = 1080
+    browser.config.driver = driver
 
     yield browser
 
@@ -62,4 +65,3 @@ def setup_browser():
     attach.add_video(browser)
 
     browser.quit()
-
